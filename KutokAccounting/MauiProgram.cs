@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using KutokAccounting.DataProvider;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace KutokAccounting;
 
@@ -13,6 +15,12 @@ public static class MauiProgram
 			.ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
 
 		builder.Services.AddMauiBlazorWebView();
+
+		builder.Services.AddDbContext<KutokDbContext>(options =>
+		{
+			//Add connection string later
+			options.UseSqlite();
+		});
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
