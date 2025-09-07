@@ -23,8 +23,6 @@ public partial class App : MauiWinUIApplication
 
 	protected override MauiApp CreateMauiApp()
 	{
-		var app = MauiProgram.CreateMauiApp();
-		
-		return app;
+		return MauiProgram.CreateMauiApp();
 	}
 }
