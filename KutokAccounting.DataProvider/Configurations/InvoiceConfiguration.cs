@@ -20,7 +20,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .Property(i => i.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("INTEGER")
-            .HasConversion(ca => ca.ToUniversalTime().Ticks, ca => new DateTime().AddTicks(ca))
+            .HasConversion<DateTimeConverter>()
             .IsRequired();
         
         builder

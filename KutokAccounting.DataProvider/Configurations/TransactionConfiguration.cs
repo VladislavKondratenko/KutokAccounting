@@ -32,7 +32,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .Property(t => t.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("INTEGER")
-            .HasConversion(ca => ca.ToUniversalTime().Ticks, ca => new DateTime().AddTicks(ca))
+            .HasConversion<DateTimeConverter>()
             .IsRequired();
 
         builder

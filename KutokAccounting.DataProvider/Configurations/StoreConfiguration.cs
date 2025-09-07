@@ -26,14 +26,14 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
             .Property(s => s.IsOpened)
             .HasColumnName("is_opened")
             .HasColumnType("INTEGER")
-            .HasConversion(io => io ? 1 : 0, io => io == 1)
+            .HasConversion<BooleanConverter>()
             .IsRequired();
         
         builder
             .Property(s => s.SetupDate)
             .HasColumnName("setup_date")
             .HasColumnType("INTEGER")
-            .HasConversion(sd => sd.ToUniversalTime().Ticks, sd => new DateTime().AddTicks(sd))
+            .HasConversion<DateTimeConverter>()
             .IsRequired();
         
         builder

@@ -23,7 +23,7 @@ public class TransactionTypeConfiguration : IEntityTypeConfiguration<Transaction
             .Property(tp => tp.IsPositiveValue)
             .HasColumnName("is_positive_value")
             .HasColumnType("INTEGER")
-            .HasConversion(ipv => ipv ? 1 : 0, ipv => ipv == 1)
+            .HasConversion<BooleanConverter>()
             .IsRequired();
 
         builder
