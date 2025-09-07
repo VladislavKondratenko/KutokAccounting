@@ -12,28 +12,35 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
         
         builder.HasKey(s => s.Id);
 
+        builder
+            .HasIndex(s => s.Name)
+            .HasDatabaseName("index_name");
+
         builder.Property(s => s.Name)
             .HasColumnName("name")
             .HasColumnType("TEXT")
             .HasMaxLength(512)
             .IsRequired();
+        
         builder
             .Property(s => s.IsOpened)
             .HasColumnName("is_opened")
             .HasColumnType("INTEGER")
-            .HasConversion<int>()
+            .HasConversion(io => io ? 1 : 0, io => io == 1)
             .IsRequired();
+        
         builder
             .Property(s => s.SetupDate)
             .HasColumnName("setup_date")
             .HasColumnType("INTEGER")
-            .HasConversion<int>()
+            .HasConversion(sd => sd.ToUniversalTime().Ticks, sd => new DateTime().AddTicks(sd))
             .IsRequired();
+        
         builder
             .Property(s => s.Address)
             .HasColumnName("address")
             .HasColumnType("TEXT")
-            .HasMaxLength(50)
+            .HasMaxLength(100)
             .IsRequired();
     }
 }

@@ -1,6 +1,7 @@
 using KutokAccounting.DataProvider.Configurations;
 using Microsoft.EntityFrameworkCore;
 using KutokAccounting.DataProvider.Models;
+
 namespace KutokAccounting.DataProvider;
 
 public class KutokDbContext : DbContext
@@ -10,7 +11,7 @@ public class KutokDbContext : DbContext
     public DbSet<Transaction> Transactions { get; set; }
     public DbSet<TransactionType> TransactionTypes { get; set; }
     public DbSet<Invoice> Invoices { get; set; }
-
+    
     public KutokDbContext(DbContextOptions<KutokDbContext> options) : base(options) { }
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)

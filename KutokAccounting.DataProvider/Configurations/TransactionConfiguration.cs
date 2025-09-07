@@ -11,22 +11,28 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
         builder.ToTable("transaction");
         
         builder.HasKey(t => t.Id);
+
+        builder
+            .HasIndex(t => t.CreatedAt)
+            .HasDatabaseName("index_created_at");
         
         builder
             .Property(t => t.Description)
             .HasColumnName("description")
             .HasColumnType("TEXT")
             .HasMaxLength(1024);
+        
         builder
             .Property(t => t.Value)
             .HasColumnName("value")
             .HasColumnType("INTEGER")
             .IsRequired();
+        
         builder
             .Property(t => t.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("INTEGER")
-            .HasConversion<int>()
+            .HasConversion(ca => ca.ToUniversalTime().Ticks, ca => new DateTime().AddTicks(ca))
             .IsRequired();
 
         builder
@@ -34,11 +40,13 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
             .WithMany(s => s.Transactions)
             .HasForeignKey(t => t.StoreId)
             .IsRequired();
+        
         builder
             .HasOne(t => t.TransactionType)
             .WithMany(tp => tp.Transactions)
             .HasForeignKey(t => t.TransactionTypeId)
             .IsRequired();
+        
         builder
             .HasOne(t => t.Invoice)
             .WithMany(i => i.Transactions)

@@ -18,11 +18,12 @@ public class TransactionTypeConfiguration : IEntityTypeConfiguration<Transaction
             .HasColumnType("TEXT")
             .HasMaxLength(512)
             .IsRequired();
+        
         builder
             .Property(tp => tp.IsPositiveValue)
             .HasColumnName("is_positive_value")
             .HasColumnType("INTEGER")
-            .HasConversion<int>()
+            .HasConversion(ipv => ipv ? 1 : 0, ipv => ipv == 1)
             .IsRequired();
 
         builder

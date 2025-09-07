@@ -9,7 +9,7 @@ public static class MauiProgram
 	public static MauiApp CreateMauiApp()
 	{
 		var builder = MauiApp.CreateBuilder();
-
+		
 		builder
 			.UseMauiApp<App>()
 			.ConfigureFonts(fonts => { fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular"); });
@@ -18,8 +18,7 @@ public static class MauiProgram
 
 		builder.Services.AddDbContext<KutokDbContext>(options =>
 		{
-			//Add connection string later
-			options.UseSqlite();
+			options.UseSqlite(KutokConfigurations.ConnectionString);
 		});
 
 #if DEBUG

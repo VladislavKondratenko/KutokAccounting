@@ -10,6 +10,6 @@ public class Transaction
     public Store Store { get; set; } = null!;
     public int TransactionTypeId { get; set; }
     public TransactionType TransactionType { get; set; } = null!;
-    public int InvoiceId { get; set; }
+    public int? InvoiceId { get; set; }
     public Invoice? Invoice { get; set; }
 }

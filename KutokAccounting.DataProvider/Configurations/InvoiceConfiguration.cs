@@ -11,18 +11,23 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.ToTable("invoice");
 
         builder.HasKey(i => i.Id);
-
+        
+        builder
+            .HasIndex(i => i.CreatedAt)
+            .HasDatabaseName("index_created_at");
+        
         builder
             .Property(i => i.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("INTEGER")
-            .HasConversion<int>()
+            .HasConversion(ca => ca.ToUniversalTime().Ticks, ca => new DateTime().AddTicks(ca))
             .IsRequired();
+        
         builder
             .Property(i => i.Number)
             .HasColumnName("number")
             .HasColumnType("TEXT")
-            .HasMaxLength(512)
+            .HasMaxLength(100)
             .IsRequired();
 
         builder
@@ -30,6 +35,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .WithMany(s => s.Invoices)
             .HasForeignKey(i => i.StoreId)
             .IsRequired();
+        
         builder
             .HasOne(i => i.Vendor)
             .WithMany(v => v.Invoices)
