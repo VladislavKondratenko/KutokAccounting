@@ -14,7 +14,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         
         builder
             .HasIndex(i => i.CreatedAt)
-            .HasDatabaseName("index_created_at");
+            .HasDatabaseName("IX_Created_At");
         
         builder
             .Property(i => i.CreatedAt)

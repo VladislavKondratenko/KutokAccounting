@@ -14,12 +14,12 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
 
         builder
             .HasIndex(s => s.Name)
-            .HasDatabaseName("index_name");
+            .HasDatabaseName("IX_Name");
 
         builder.Property(s => s.Name)
             .HasColumnName("name")
             .HasColumnType("TEXT")
-            .HasMaxLength(512)
+            .HasMaxLength(100)
             .IsRequired();
         
         builder

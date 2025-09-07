@@ -16,7 +16,7 @@ public class TransactionTypeConfiguration : IEntityTypeConfiguration<Transaction
             .Property(tp => tp.Name)
             .HasColumnName("name")
             .HasColumnType("TEXT")
-            .HasMaxLength(512)
+            .HasMaxLength(100)
             .IsRequired();
         
         builder

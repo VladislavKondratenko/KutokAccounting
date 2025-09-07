@@ -16,7 +16,7 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
             .Property(v => v.Name)
             .HasColumnName("name")
             .HasColumnType("TEXT")
-            .HasMaxLength(256)
+            .HasMaxLength(100)
             .IsRequired();
         
         builder
