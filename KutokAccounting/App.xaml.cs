@@ -1,4 +1,7 @@
-﻿namespace KutokAccounting;
+﻿using Microsoft.Maui;
+using Microsoft.Maui.Controls;
+
+namespace KutokAccounting;
 
 public partial class App : Application
 {
@@ -11,7 +14,7 @@ public partial class App : Application
 	{
 		return new Window(new MainPage())
 		{
-			Title = "KutokAccounting"
+			Title = "Kutok"
 		};
 	}
 }

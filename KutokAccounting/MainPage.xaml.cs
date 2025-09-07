@@ -1,4 +1,6 @@
-﻿namespace KutokAccounting;
+﻿using Microsoft.Maui.Controls;
+
+namespace KutokAccounting;
 
 public partial class MainPage : ContentPage
 {
