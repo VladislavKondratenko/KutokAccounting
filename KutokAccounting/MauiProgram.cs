@@ -1,4 +1,3 @@
-﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Maui.Controls.Hosting;
 using Microsoft.Maui.Hosting;
@@ -18,6 +17,11 @@ public static class MauiProgram
 		
 		builder.Services.AddMudServices();
 		builder.Services.AddMauiBlazorWebView();
+
+		builder.Services.AddDbContext<KutokDbContext>(options =>
+		{
+			options.UseSqlite(KutokConfigurations.ConnectionString);
+		});
 
 #if DEBUG
 		builder.Services.AddBlazorWebViewDeveloperTools();
