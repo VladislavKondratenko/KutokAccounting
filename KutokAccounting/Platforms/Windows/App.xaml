@@ -5,5 +5,5 @@
     xmlns:maui="using:Microsoft.Maui"
     xmlns:local="using:KutokAccounting.WinUI">
     
-
+    
 </maui:MauiWinUIApplication>

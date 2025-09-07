@@ -1,3 +1,7 @@
+.drawer-white-bg{
+    background-color: white;
+}
+
 .page {
     position: relative;
     display: flex;
