@@ -1,6 +1,6 @@
+using KutokAccounting.DataProvider;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Controls.Hosting;
-using Microsoft.Maui.Hosting;
 using MudBlazor.Services;
 
 namespace KutokAccounting;
