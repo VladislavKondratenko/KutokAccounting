@@ -1,5 +1,6 @@
 using KutokAccounting.DataProvider;
 using KutokAccounting.DataProvider.Models;
+using KutokAccounting.Services.Vendors.DataTransferObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace KutokAccounting.Services.Vendors;
@@ -19,9 +20,29 @@ public class VendorRepository : IVendorRepository
         await _dbContext.Vendors.AddAsync(vendor, cancellationToken);
     }
 
-    public async ValueTask<List<Vendor>> GetVendorsAsync(CancellationToken cancellationToken)
+    public async ValueTask<List<Vendor>> GetAsync(QueryParameters queryParameters, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        cancellationToken.ThrowIfCancellationRequested();   
+        
+        var page = queryParameters.Page;
+        var pageSize = queryParameters.PageSize;
+        
+        var query = _dbContext.Vendors.AsQueryable();
+        if (!string.IsNullOrWhiteSpace(queryParameters.Name))
+            query = query.Where(v => v.Name == queryParameters.Name);
+
+        return await query
+            .AsNoTracking()
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(v => new Vendor()
+            {
+                Id = v.Id,
+                Name = v.Name,
+                Description = v.Description
+            })
+            .OrderBy(v => v.Name)
+            .ToListAsync(cancellationToken);
     }
 
     public async ValueTask<Vendor?> GetByIdAsync(int id, CancellationToken cancellationToken)

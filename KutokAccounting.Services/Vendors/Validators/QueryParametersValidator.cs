@@ -7,6 +7,14 @@ public sealed class QueryParametersValidator : AbstractValidator<QueryParameters
 {
     public QueryParametersValidator()
     {
-        RuleFor(p => p.PageSize).LessThan(11);
+        RuleFor(p => p.Name).Length(1, 100);
+
+        RuleFor(p => p.Page)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(100);
+
+        RuleFor(p => p.PageSize)
+            .GreaterThan(0)
+            .LessThanOrEqualTo(10);
     }
 }
