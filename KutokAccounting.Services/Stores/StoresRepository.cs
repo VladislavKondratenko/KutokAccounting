@@ -50,23 +50,24 @@ public class StoresRepository : IStoresRepository
 		var store = await _storesDbSet.FindAsync(storeId);
 
 		ThrowIfStoreIsNull(store, storeId);
-		
+
 		//tech fields like history remain the same
 		store.Name = updatedStore.Name;
 		store.IsOpened = updatedStore.IsOpened;
 		store.SetupDate = updatedStore.SetupDate;
 		store.Address = updatedStore.Address;
-
+		
 		_storesDbSet.Update(store);
+		await _dbContext.SaveChangesAsync();
 	}
 
-	public void DeleteStoreAsync(int storeId)
+	public async Task DeleteStoreAsync(int storeId)
 	{
 		var store = _storesDbSet.Find(storeId);
 		ThrowIfStoreIsNull(store, storeId);
 		
 		_storesDbSet.Remove(store);
-		_dbContext.SaveChanges();
+		await _dbContext.SaveChangesAsync();
 	}
 	private bool StoreExists(Store store)
 	{
@@ -74,7 +75,7 @@ public class StoresRepository : IStoresRepository
 	}
 	private bool HasRequiredData(Store store)
 	{
-		return store.Transactions != null && store.IsOpened != null && store.SetupDate != null && store.Name != null;
+		return store.IsOpened != null && store.SetupDate != null && store.Name != null;
 	}
 
 	private void ThrowIfStoreIsNull(Store? store, int storeId)

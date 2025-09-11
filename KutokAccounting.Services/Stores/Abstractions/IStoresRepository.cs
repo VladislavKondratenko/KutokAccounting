@@ -8,5 +8,5 @@ public interface IStoresRepository
 	int GetStoresCount();
 	IQueryable<Store> GetStoresPage(int pageSize, int pageNumber);
 	Task UpdateStoreAsync(int storeId, Store updatedStore);
-	void DeleteStoreAsync(int storeId);
+	Task DeleteStoreAsync(int storeId);
 }

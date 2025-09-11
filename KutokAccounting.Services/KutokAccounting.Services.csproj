@@ -10,8 +10,4 @@
       <ProjectReference Include="..\KutokAccounting.DataProvider\KutokAccounting.DataProvider.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Stores\Extensions\" />
-    </ItemGroup>
-
 </Project>
