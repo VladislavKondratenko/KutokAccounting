@@ -1,3 +1,8 @@
-namespace KutokAccounting.Services.Vendors.DataTransferObjects;
+﻿namespace KutokAccounting.Services.Vendors.DataTransferObjects;
 
-public sealed record VendorDto(string Name, string Description);
+public sealed record VendorDto
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public string Description { get; set; }
+}

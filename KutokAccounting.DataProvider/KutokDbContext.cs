@@ -1,4 +1,4 @@
-using KutokAccounting.DataProvider.Configurations;
+    using KutokAccounting.DataProvider.Configurations;
 using Microsoft.EntityFrameworkCore;
 using KutokAccounting.DataProvider.Models;
 

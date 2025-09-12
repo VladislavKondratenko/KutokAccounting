@@ -1,6 +1,6 @@
-using FluentValidation;
 using KutokAccounting.DataProvider.Models;
 using KutokAccounting.Services.Vendors.DataTransferObjects;
+using KutokAccounting.Services.Vendors.Validators;
 using Microsoft.Extensions.Logging;
 
 namespace KutokAccounting.Services.Vendors;
@@ -8,15 +8,16 @@ namespace KutokAccounting.Services.Vendors;
 public class VendorService : IVendorService
 {
     private readonly IVendorRepository _repository;
-    private readonly AbstractValidator<VendorDto> _vendorModelValidator;
-    private readonly AbstractValidator<QueryParameters> _queryValidator;
+    private readonly VendorDtoValidator _vendorModelValidator;
+    private readonly QueryParametersValidator _queryValidator;
     private readonly ILoggerFactory _loggerFactory;
 
-    public VendorService(IVendorRepository repository, AbstractValidator<VendorDto> vendorModelValidator, ILoggerFactory loggerFactory)
+    public VendorService(IVendorRepository repository, VendorDtoValidator vendorModelValidator, QueryParametersValidator queryValidator, ILoggerFactory loggerFactory)
     {
         _repository = repository;
         _vendorModelValidator = vendorModelValidator;
         _loggerFactory = loggerFactory;
+        _queryValidator = queryValidator;
     }
     
     public async ValueTask<Vendor> CreateAsync(VendorDto request, CancellationToken cancellationToken)
@@ -27,11 +28,11 @@ public class VendorService : IVendorService
         
         var validationResult = await _vendorModelValidator.ValidateAsync(request, cancellationToken);
 
-        if (!validationResult.IsValid)
+        if (validationResult.IsValid is false)
         {
             logger.LogWarning("Vendor creation request validation failed. Errors: {Errors}", validationResult.Errors);
             
-            throw new Exception(validationResult.ToString());
+            throw new ArgumentException(validationResult.ToString());
         }
 
         logger.LogInformation("Validation succeeded for vendor {VendorName}", request.Name);
@@ -73,7 +74,7 @@ public class VendorService : IVendorService
         return vendor;
     }
 
-    public async ValueTask<List<Vendor>> GetAsync(QueryParameters queryParameters, CancellationToken cancellationToken)
+    public async ValueTask<VendorPagedResult> GetAsync(QueryParameters queryParameters, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
 
@@ -83,7 +84,7 @@ public class VendorService : IVendorService
 
         var validationResult = await _queryValidator.ValidateAsync(queryParameters, cancellationToken);
 
-        if (!validationResult.IsValid)
+        if (validationResult.IsValid is false)
         {
             logger.LogWarning("Query parameters validation failed. Errors: {Errors}", validationResult.Errors);
 
@@ -114,7 +115,7 @@ public class VendorService : IVendorService
         
         var validationResult = await _vendorModelValidator.ValidateAsync(request, cancellationToken);
 
-        if (!validationResult.IsValid)
+        if (validationResult.IsValid is false)
         {
             logger.LogWarning("Vendor update validation failed: {ValidationErrors}", validationResult.Errors);
             
@@ -125,6 +126,7 @@ public class VendorService : IVendorService
         
         var vendor = new Vendor()
         {
+            Id = request.Id,
             Name = request.Name,
             Description = request.Description
         };

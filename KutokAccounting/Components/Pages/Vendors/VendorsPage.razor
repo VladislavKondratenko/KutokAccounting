@@ -1,0 +1,140 @@
+@page "/vendors"
+@inject IVendorService VendorService
+@inject IDialogService DialogService
+@using KutokAccounting.DataProvider.Models
+@using KutokAccounting.Services.Vendors.DataTransferObjects
+
+<MudDataGrid @ref="_dataGrid" T="Vendor" ServerData="GetVendorsAsync" Filterable="true">
+    <ToolBarContent>
+        <MudStack Style="width: 100%;">
+            <MudText Typo="Typo.h6" Style="margin-top:6px;">Постачальники</MudText>
+            <MudStack Row="true" Justify="Justify.SpaceBetween" Style="width:100%;" >
+                <MudTextField 
+                    T="string" 
+                    ValueChanged="(v => OnSearch(v))" 
+                    Placeholder="Пошук" 
+                    Adornment="Adornment.End" 
+                    AdornmentIcon="@Icons.Material.Filled.Search" 
+                    IconSize="Size.Medium"
+                    Style="width:450px;">
+                </MudTextField>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnAddButtonClick">Додати нового постачальника</MudButton>
+            </MudStack>
+        </MudStack>
+    </ToolBarContent>
+    <Columns>
+        <PropertyColumn Property="v => v.Name" Title="Постачальник" Sortable="false" FilterOperators="_filterOperators"></PropertyColumn>
+        <PropertyColumn Property="v => v.Description" Title="Опис" Sortable="false" Filterable="false"></PropertyColumn>
+        <TemplateColumn>
+            <CellTemplate>
+                <MudStack Row Justify="Justify.FlexEnd">
+                    <MudButton Size="Size.Medium" Variant="Variant.Filled" Color="Color.Primary" OnClick="() => OnEditButtonClick(context.Item)">Редагувати</MudButton>
+                    <MudButton Size="Size.Medium" Variant="Variant.Filled" Color="Color.Secondary" OnClick="() => OnDeleteButtonClick(context.Item)">Видалити</MudButton>
+                </MudStack>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager T="Vendor"></MudDataGridPager>
+    </PagerContent>
+</MudDataGrid>
+
+
+@code
+{
+    private MudDataGrid<Vendor> _dataGrid;
+    private HashSet<string> _filterOperators = new()
+    {
+        "equals"
+    };
+
+    private int _page = 1;
+    private int _pageSize = 10;
+
+    private string? _searchString;
+
+    private async Task<GridData<Vendor>> GetVendorsAsync(GridState<Vendor> state)
+    {
+        var filter = state.FilterDefinitions.FirstOrDefault()?.Value?.ToString();
+
+        _page += state.Page;
+        _pageSize = state.PageSize;
+
+        var queryParameters = new QueryParameters(filter, _page, _pageSize);
+
+        try
+        {
+            var pagedResult = await VendorService.GetAsync(queryParameters, CancellationToken.None);
+
+            return new GridData<Vendor>()
+            {
+                Items = pagedResult.Vendors ?? new List<Vendor>(),
+                TotalItems = pagedResult.Count
+            };
+        }
+        catch (Exception)
+        {
+            return new GridData<Vendor>()
+            {
+                Items = new List<Vendor>(),
+                TotalItems = 0
+            };
+        }
+        finally
+        {
+            StateHasChanged();
+        }
+    }
+    private async Task OnDeleteButtonClick(Vendor vendor)
+    {
+        await VendorService.DeleteAsync(vendor.Id, CancellationToken.None);
+
+        if (_dataGrid != null)
+            await _dataGrid.ReloadServerData();
+
+    }
+    private async Task OnEditButtonClick(Vendor vendor)
+    {
+        var options = new DialogOptions()
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.Medium,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        };
+
+        var parameters = new DialogParameters<EditVendorDialog>() { { d => d.Vendor, vendor} };
+
+        var dialog = await DialogService.ShowAsync<EditVendorDialog>("Редагувати постачальника", parameters, options);
+
+        var result = await dialog.Result;
+
+        if (_dataGrid != null && !result.Canceled)
+            await _dataGrid.ReloadServerData();
+    }
+
+    private async Task OnAddButtonClick()
+    {
+        var options = new DialogOptions()
+        {
+            FullWidth = true,
+            MaxWidth = MaxWidth.Medium,
+            CloseButton = true,
+            CloseOnEscapeKey = true
+        };
+
+        var dialog = await DialogService.ShowAsync<AddVendorDialog>("Додати нового постачальника", options);
+
+        var result = await dialog.Result;
+
+        if (_dataGrid != null && !result.Canceled)
+            await _dataGrid.ReloadServerData();
+    }
+
+    //TODO: Изменить возвращаемое значение???
+    private Task OnSearch(string text)
+    {
+        _searchString = text;
+        return _dataGrid.ReloadServerData();
+    }
+}

@@ -13,8 +13,6 @@ public sealed class VendorDtoValidator : AbstractValidator<VendorDto>
             .MaximumLength(100);
 
         RuleFor(r => r.Description)
-            .NotNull()
-            .NotEmpty()
             .MaximumLength(1024);
     }
 }

@@ -41,7 +41,7 @@ namespace KutokAccounting.DataProvider.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt")
-                        .HasDatabaseName("index_created_at");
+                        .HasDatabaseName("IX_Invoice_Created_At");
 
                     b.HasIndex("StoreId");
 
@@ -68,7 +68,7 @@ namespace KutokAccounting.DataProvider.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(512)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT")
                         .HasColumnName("name");
 
@@ -79,7 +79,7 @@ namespace KutokAccounting.DataProvider.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("Name")
-                        .HasDatabaseName("index_name");
+                        .HasDatabaseName("IX_Name");
 
                     b.ToTable("store", (string)null);
                 });
@@ -115,7 +115,7 @@ namespace KutokAccounting.DataProvider.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedAt")
-                        .HasDatabaseName("index_created_at");
+                        .HasDatabaseName("IX_Transaction_Created_At");
 
                     b.HasIndex("InvoiceId");
 
@@ -138,7 +138,7 @@ namespace KutokAccounting.DataProvider.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(512)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT")
                         .HasColumnName("name");
 
@@ -160,7 +160,7 @@ namespace KutokAccounting.DataProvider.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(256)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT")
                         .HasColumnName("name");
 

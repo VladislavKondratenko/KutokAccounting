@@ -14,7 +14,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 
         builder
             .HasIndex(t => t.CreatedAt)
-            .HasDatabaseName("IX_Created_At");
+            .HasDatabaseName("IX_Transaction_Created_At");
          
         builder
             .Property(t => t.Description)

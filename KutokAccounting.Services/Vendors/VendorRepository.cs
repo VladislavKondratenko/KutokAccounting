@@ -15,23 +15,24 @@ public class VendorRepository : IVendorRepository
     }
     public async ValueTask CreateAsync(Vendor vendor, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         await _dbContext.Vendors.AddAsync(vendor, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public async ValueTask<List<Vendor>> GetAsync(QueryParameters queryParameters, CancellationToken cancellationToken)
+    public async ValueTask<VendorPagedResult> GetAsync(QueryParameters queryParameters, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();   
-        
         var page = queryParameters.Page;
         var pageSize = queryParameters.PageSize;
+        var pagedResult = new VendorPagedResult();
         
         var query = _dbContext.Vendors.AsQueryable();
-        if (!string.IsNullOrWhiteSpace(queryParameters.Name))
+        
+        if (string.IsNullOrWhiteSpace(queryParameters.Name) is false)
             query = query.Where(v => v.Name == queryParameters.Name);
-
-        return await query
+        
+        pagedResult.Count = await query.CountAsync(cancellationToken);
+        
+        var vendors = await query
             .AsNoTracking()
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
@@ -43,12 +44,14 @@ public class VendorRepository : IVendorRepository
             })
             .OrderBy(v => v.Name)
             .ToListAsync(cancellationToken);
+
+        pagedResult.Vendors = vendors;
+
+        return pagedResult;
     }
 
     public async ValueTask<Vendor?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         return await _dbContext.Vendors
             .AsNoTracking()
             .FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
@@ -56,8 +59,6 @@ public class VendorRepository : IVendorRepository
 
     public async ValueTask DeleteAsync(int id, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         await _dbContext.Vendors
             .Where(v => v.Id == id)
             .ExecuteDeleteAsync(cancellationToken);
@@ -65,12 +66,10 @@ public class VendorRepository : IVendorRepository
 
     public async ValueTask UpdateAsync(Vendor vendor, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         await _dbContext.Vendors
             .Where(v => v.Id == vendor.Id)
             .ExecuteUpdateAsync(v => v
                     .SetProperty(p => p.Name, vendor.Name)
-                    .SetProperty(p => p.Description, vendor.Description), cancellationToken); 
+                    .SetProperty(p => p.Description, vendor.Description), cancellationToken);
     }
 }
