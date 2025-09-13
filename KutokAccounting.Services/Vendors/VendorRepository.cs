@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace KutokAccounting.Services.Vendors;
 
-public class VendorRepository : IVendorRepository
+public sealed class VendorRepository : IVendorRepository
 {
     private readonly KutokDbContext _dbContext;
 
@@ -13,6 +13,7 @@ public class VendorRepository : IVendorRepository
     {
         _dbContext = dbContext;
     }
+
     public async ValueTask CreateAsync(Vendor vendor, CancellationToken cancellationToken)
     {
         await _dbContext.Vendors.AddAsync(vendor, cancellationToken);
@@ -21,22 +22,30 @@ public class VendorRepository : IVendorRepository
 
     public async ValueTask<VendorPagedResult> GetAsync(QueryParameters queryParameters, CancellationToken cancellationToken)
     {
-        var page = queryParameters.Page;
-        var pageSize = queryParameters.PageSize;
+        var pagination = new Pagination()
+        {
+            Page = queryParameters.Page,
+            PageSize = queryParameters.PageSize
+        };
+        
         var pagedResult = new VendorPagedResult();
-        
+
         var query = _dbContext.Vendors.AsQueryable();
-        
+
         if (string.IsNullOrWhiteSpace(queryParameters.Name) is false)
             query = query.Where(v => v.Name == queryParameters.Name);
-        
+
+        if (string.IsNullOrEmpty(queryParameters.SearchString) is false)
+            query = query.Where(v =>
+                EF.Functions.Like(v.Name, $"%{queryParameters.SearchString}%") || EF.Functions.Like(v.Description, $"%{queryParameters.SearchString}%"));
+
         pagedResult.Count = await query.CountAsync(cancellationToken);
-        
+
         var vendors = await query
             .AsNoTracking()
-            .Skip((page - 1) * pageSize)
-            .Take(pageSize)
-            .Select(v => new Vendor()
+            .Skip(pagination.Skip)
+            .Take(pagination.PageSize)
+            .Select(v => new Vendor
             {
                 Id = v.Id,
                 Name = v.Name,
@@ -69,7 +78,7 @@ public class VendorRepository : IVendorRepository
         await _dbContext.Vendors
             .Where(v => v.Id == vendor.Id)
             .ExecuteUpdateAsync(v => v
-                    .SetProperty(p => p.Name, vendor.Name)
-                    .SetProperty(p => p.Description, vendor.Description), cancellationToken);
+                .SetProperty(p => p.Name, vendor.Name)
+                .SetProperty(p => p.Description, vendor.Description), cancellationToken);
     }
 }

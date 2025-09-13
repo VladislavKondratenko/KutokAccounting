@@ -9,16 +9,16 @@ public class TransactionTypeConfiguration : IEntityTypeConfiguration<Transaction
     public void Configure(EntityTypeBuilder<TransactionType> builder)
     {
         builder.ToTable("transaction_type");
-        
+
         builder.HasKey(tp => tp.Id);
-        
+
         builder
             .Property(tp => tp.Name)
             .HasColumnName("name")
             .HasColumnType("TEXT")
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .Property(tp => tp.IsPositiveValue)
             .HasColumnName("is_positive_value")

@@ -11,14 +11,14 @@ public class VendorConfiguration : IEntityTypeConfiguration<Vendor>
         builder.ToTable("vendor");
 
         builder.HasKey(v => v.Id);
-        
+
         builder
             .Property(v => v.Name)
             .HasColumnName("name")
             .HasColumnType("TEXT")
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .Property(v => v.Description)
             .HasColumnName("description")

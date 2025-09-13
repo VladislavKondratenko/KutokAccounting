@@ -18,7 +18,7 @@
                           Immediate="true"
                           Required="true"
                           RequiredError="Це поле обов'язкове"
-                          Margin="Margin.Normal" />
+                          Margin="Margin.Normal"/>
             <MudTextField @bind-Value="Vendor.Description"
                           Placeholder="Введіть опис постачальника"
                           Label="Опис"
@@ -28,7 +28,7 @@
                           Lines="5"
                           Immediate="true"
                           Required="false"
-                          Margin="Margin.Normal" />
+                          Margin="Margin.Normal"/>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -38,26 +38,30 @@
 </MudDialog>
 
 @code {
-    [CascadingParameter]
-    public IMudDialogInstance MudDialog { get; set; }
-    [Parameter]
-    public Vendor Vendor { get; set; } = null!;
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public Vendor Vendor { get; set; } = null!;
 
-    private bool _isSuccess = false;
+    private CancellationTokenSource tokenSource = new CancellationTokenSource();
+    
+    private bool _isSuccess;
 
     private async Task Update()
     {
-        var vendor = new VendorDto()
+        var vendor = new VendorDto
         {
             Id = Vendor.Id,
             Name = Vendor.Name,
             Description = Vendor.Description
         };
 
-        await VendorService.UpdateAsync(vendor, CancellationToken.None);
+        await VendorService.UpdateAsync(vendor, tokenSource.Token);
 
         MudDialog.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel() => MudDialog.Close();
+    private void Cancel()
+    {
+        MudDialog.Close();
+    }
 }

@@ -1,5 +1,4 @@
-﻿@using KutokAccounting.DataProvider.Models
-@using KutokAccounting.Services.Vendors.DataTransferObjects
+﻿@using KutokAccounting.Services.Vendors.DataTransferObjects
 @inject IVendorService VendorService
 
 <MudDialog>
@@ -18,7 +17,7 @@
                           Immediate="true"
                           Required="true"
                           RequiredError="Це поле обов'язкове"
-                          Margin="Margin.Normal" />
+                          Margin="Margin.Normal"/>
             <MudTextField @bind-Value="_description"
                           Placeholder="Введіть опис постачальника"
                           Label="Опис"
@@ -28,7 +27,7 @@
                           Lines="5"
                           Immediate="true"
                           Required="false"
-                          Margin="Margin.Normal" />
+                          Margin="Margin.Normal"/>
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -38,26 +37,30 @@
 </MudDialog>
 
 @code{
-    [CascadingParameter]
-    public IMudDialogInstance MudDialog { get; set; }
-
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; }
+    
+    private CancellationTokenSource tokenSource = new CancellationTokenSource();
+    
     private string _name = null!;
     private string _description = null!;
 
-    private bool _isSuccess = false;
+    private bool _isSuccess;
 
     private async Task Add()
     {
-        var vendor = new VendorDto()
+        var vendor = new VendorDto
         {
             Name = _name,
             Description = _description
         };
 
-        await VendorService.CreateAsync(vendor, CancellationToken.None);
+        await VendorService.CreateAsync(vendor, tokenSource.Token);
 
         MudDialog.Close(DialogResult.Ok(true));
     }
 
-    private void Cancel() => MudDialog.Close();
+    private void Cancel()
+    {
+        MudDialog.Close();
+    }
 }
