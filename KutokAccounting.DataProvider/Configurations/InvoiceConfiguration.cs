@@ -11,18 +11,18 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
         builder.ToTable("invoice");
 
         builder.HasKey(i => i.Id);
-        
+
         builder
             .HasIndex(i => i.CreatedAt)
-            .HasDatabaseName("IX_Created_At");
-        
+            .HasDatabaseName("IX_Invoice_Created_At");
+
         builder
             .Property(i => i.CreatedAt)
             .HasColumnName("created_at")
             .HasColumnType("INTEGER")
             .HasConversion<DateTimeConverter>()
             .IsRequired();
-        
+
         builder
             .Property(i => i.Number)
             .HasColumnName("number")
@@ -35,7 +35,7 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
             .WithMany(s => s.Invoices)
             .HasForeignKey(i => i.StoreId)
             .IsRequired();
-        
+
         builder
             .HasOne(i => i.Vendor)
             .WithMany(v => v.Invoices)

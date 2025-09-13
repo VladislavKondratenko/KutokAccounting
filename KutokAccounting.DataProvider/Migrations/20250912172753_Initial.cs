@@ -16,7 +16,7 @@ namespace KutokAccounting.DataProvider.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    name = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
+                    name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     is_opened = table.Column<int>(type: "INTEGER", nullable: false),
                     setup_date = table.Column<long>(type: "INTEGER", nullable: false),
                     address = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false)
@@ -32,7 +32,7 @@ namespace KutokAccounting.DataProvider.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    name = table.Column<string>(type: "TEXT", maxLength: 512, nullable: false),
+                    name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     is_positive_value = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
@@ -46,7 +46,7 @@ namespace KutokAccounting.DataProvider.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    name = table.Column<string>(type: "TEXT", maxLength: 256, nullable: false),
+                    name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     description = table.Column<string>(type: "TEXT", maxLength: 1024, nullable: true)
                 },
                 constraints: table =>
@@ -117,7 +117,7 @@ namespace KutokAccounting.DataProvider.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "index_created_at",
+                name: "IX_Invoice_Created_At",
                 table: "invoice",
                 column: "created_at");
 
@@ -132,12 +132,12 @@ namespace KutokAccounting.DataProvider.Migrations
                 column: "VendorId");
 
             migrationBuilder.CreateIndex(
-                name: "index_name",
+                name: "IX_Name",
                 table: "store",
                 column: "name");
 
             migrationBuilder.CreateIndex(
-                name: "index_created_at",
+                name: "IX_Transaction_Created_At",
                 table: "transaction",
                 column: "created_at");
 

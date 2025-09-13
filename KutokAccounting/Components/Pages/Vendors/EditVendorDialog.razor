@@ -1,0 +1,67 @@
+﻿@using KutokAccounting.DataProvider.Models
+@using KutokAccounting.Services.Vendors.DataTransferObjects
+@inject IVendorService VendorService
+
+<MudDialog>
+    <TitleContent>
+        Редагувати постачальника
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="_isSuccess">
+            <MudTextField @bind-Value="Vendor.Name"
+                          Placeholder="Введіть назву постачальника"
+                          Label="Назва"
+                          Variant="Variant.Outlined"
+                          Counter="100"
+                          MaxLength="100"
+                          Lines="1"
+                          Immediate="true"
+                          Required="true"
+                          RequiredError="Це поле обов'язкове"
+                          Margin="Margin.Normal"/>
+            <MudTextField @bind-Value="Vendor.Description"
+                          Placeholder="Введіть опис постачальника"
+                          Label="Опис"
+                          Variant="Variant.Outlined"
+                          Counter="1024"
+                          MaxLength="1024"
+                          Lines="5"
+                          Immediate="true"
+                          Required="false"
+                          Margin="Margin.Normal"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Назад</MudButton>
+        <MudButton OnClick="Update" Disabled="!_isSuccess" Color="Color.Primary">Підтвердити</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] public IMudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public Vendor Vendor { get; set; } = null!;
+
+    private CancellationTokenSource tokenSource = new CancellationTokenSource();
+    
+    private bool _isSuccess;
+
+    private async Task Update()
+    {
+        var vendor = new VendorDto
+        {
+            Id = Vendor.Id,
+            Name = Vendor.Name,
+            Description = Vendor.Description
+        };
+
+        await VendorService.UpdateAsync(vendor, tokenSource.Token);
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    private void Cancel()
+    {
+        MudDialog.Close();
+    }
+}

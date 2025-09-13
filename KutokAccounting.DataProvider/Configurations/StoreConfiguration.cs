@@ -9,7 +9,7 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
     public void Configure(EntityTypeBuilder<Store> builder)
     {
         builder.ToTable("store");
-        
+
         builder.HasKey(s => s.Id);
 
         builder
@@ -21,21 +21,21 @@ public class StoreConfiguration : IEntityTypeConfiguration<Store>
             .HasColumnType("TEXT")
             .HasMaxLength(100)
             .IsRequired();
-        
+
         builder
             .Property(s => s.IsOpened)
             .HasColumnName("is_opened")
             .HasColumnType("INTEGER")
             .HasConversion<BooleanConverter>()
             .IsRequired();
-        
+
         builder
             .Property(s => s.SetupDate)
             .HasColumnName("setup_date")
             .HasColumnType("INTEGER")
             .HasConversion<DateTimeConverter>()
             .IsRequired();
-        
+
         builder
             .Property(s => s.Address)
             .HasColumnName("address")
