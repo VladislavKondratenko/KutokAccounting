@@ -1,7 +1,7 @@
 @inject IStoresService StoresService
 @page "/"
 
-<MudStack Class="m-4 " Row="true" Spacing="5">
+<MudStack Class="m-4 flex-wrap" Row="true" Spacing="5">
     @foreach (var store in Stores)
     {
         <MudCard>
