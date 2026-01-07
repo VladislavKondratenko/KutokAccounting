@@ -1,3 +1,4 @@
+using KutokAccounting.Components.Pages.Invoices.Models;
 using KutokAccounting.Components.Pages.Transactions.Helpers;
 using KutokAccounting.Components.Pages.Transactions.Models;
 using KutokAccounting.Components.Pages.TransactionTypes.Models;
@@ -72,11 +73,7 @@ public partial class TransactionsPage : ComponentBase
 		}
 		catch (Exception)
 		{
-			return new GridData<TransactionView>
-			{
-				Items = new List<TransactionView>(),
-				TotalItems = 0
-			};
+			return new GridData<TransactionView>();
 		}
 	}
 
@@ -84,33 +81,50 @@ public partial class TransactionsPage : ComponentBase
 		GridState<TransactionView> state,
 		CancellationToken cancellationToken)
 	{
-		QueryMapper mapper = new QueryMapper(StoreId, _searchString, _dateRange);
-		
-		TransactionQueryParameters transactionQueryParameters = mapper.MapToQueryParameters(state);
-
-		PagedResult<Transaction> pagedResult =
-			await TransactionService.GetAsync(transactionQueryParameters, cancellationToken);
-
-		List<TransactionView> view = pagedResult.Items.Select(t => new TransactionView
+		try
 		{
-			Id = t.Id,
-			Name = t.Name,
-			Description = t.Description,
-			Money = t.Money,
-			CreatedAt = t.CreatedAt,
-			TransactionType = new TransactionTypeView
+			QueryMapper mapper = new(StoreId, _searchString, _dateRange);
+
+			TransactionQueryParameters transactionQueryParameters = mapper.MapToQueryParameters(state);
+
+			PagedResult<Transaction> pagedResult =
+				await TransactionService.GetAsync(transactionQueryParameters, cancellationToken);
+
+			List<TransactionView> result = pagedResult.Items.Select(t => new TransactionView
 			{
-				Id = t.TransactionType.Id,
-				Name = t.TransactionType.Name,
-				IsIncome = t.TransactionType.IsIncome
-			}
-		}).ToList();
+				Id = t.Id,
+				Name = t.Name,
+				Description = t.Description,
+				Money = t.Money,
+				CreatedAt = t.CreatedAt,
+				TransactionType = new TransactionTypeView
+				{
+					Id = t.TransactionType.Id,
+					Name = t.TransactionType.Name,
+					IsIncome = t.TransactionType.IsIncome
+				},
+				Invoice = t.Invoice is not null
+					? new InvoiceView
+					{
+						Id = t.Invoice.Id,
+						Number = t.Invoice.Number,
+						Vendor = t.Invoice.Vendor,
+						StatusHistory = t.Invoice.StatusHistory,
+						Money = t.Money
+					}
+					: null
+			}).ToList();
 
-		return new GridData<TransactionView>
+			return new GridData<TransactionView>
+			{
+				Items = result,
+				TotalItems = pagedResult.Count
+			};
+		}
+		catch (Exception)
 		{
-			Items = view ?? new List<TransactionView>(),
-			TotalItems = pagedResult.Count
-		};
+			return new GridData<TransactionView>();
+		}
 	}
 
 	private async Task OnDateRangeChanged()
@@ -164,6 +178,10 @@ public partial class TransactionsPage : ComponentBase
 	{
 		using CancellationTokenSource tokenSource = new(TimeSpan.FromSeconds(30));
 
+		if (transaction.Invoice is not null)
+		{
+		}
+		
 		await TransactionService.DeleteAsync(transaction.Id, tokenSource.Token);
 
 		await _dataGrid.ReloadServerData();
@@ -182,7 +200,7 @@ public partial class TransactionsPage : ComponentBase
 		DialogParameters<EditTransactionDialog> parameters = new()
 		{
 			{
-				d => d.TransactionView, transaction
+				d => d.Transaction, transaction
 			}
 		};
 

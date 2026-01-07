@@ -2,7 +2,7 @@
 @page "/"
 
 <MudStack Class="m-4 " Row="true" Spacing="5">
-    @foreach (var store in Stores)
+    @foreach (StoreDto store in Stores)
     {
         <MudCard>
             <MudCardContent>
@@ -10,7 +10,9 @@
                 <MudText Typo="Typo.body2">Адреса: @(store.Address ?? "нема адреси")</MudText>
             </MudCardContent>
             <MudCardActions>
-                <MudButton OnClick="() => OnTransactionsButtonClick(store)" Variant="Variant.Text" Color="Color.Primary">Транзакції</MudButton>
+                <MudButton OnClick="() => OnTransactionsButtonClick(store)" Variant="Variant.Text"
+                           Color="Color.Primary">Транзакції
+                </MudButton>
             </MudCardActions>
         </MudCard>
     }

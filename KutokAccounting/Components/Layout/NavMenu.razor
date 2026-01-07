@@ -10,10 +10,16 @@
         Типи
         транзакцій
     </MudNavLink>
+    <MudNavGroup Icon="@Icons.Material.Filled.DocumentScanner" Title="Накладні" Ripple="false">
+        @foreach (StoreDto store in _stores)
+        {
+            <MudNavLink Href="@GetHrefToStoreInvoices(store.Id)">@store.Name</MudNavLink>
+        }
+    </MudNavGroup>
     <MudNavGroup Icon="@Icons.Material.Filled.Money" Title="Бухгалтерія" Ripple="false">
         @foreach (StoreDto store in _stores)
         {
-            <MudNavLink Href="@GetHrefToStore(store.Id)">@store.Name</MudNavLink>
+            <MudNavLink Href="@GetHrefToStoreAccounting(store.Id)">@store.Name</MudNavLink>
         }
     </MudNavGroup>
 </MudNavMenu>

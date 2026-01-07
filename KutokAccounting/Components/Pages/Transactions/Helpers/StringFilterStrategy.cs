@@ -12,7 +12,7 @@ public class StringFilterStrategy : IFilterStrategy
 	{
 		_applyAction = applyAction;
 	}
-	
+
 	public void Apply(Filters filters, IFilterDefinition<TransactionView> filterDefinition)
 	{
 		string? value = filterDefinition.Value?.ToString();
@@ -22,5 +22,4 @@ public class StringFilterStrategy : IFilterStrategy
 			_applyAction(filters, value);
 		}
 	}
-	
 }

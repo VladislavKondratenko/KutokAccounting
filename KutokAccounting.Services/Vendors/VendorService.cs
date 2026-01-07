@@ -47,11 +47,12 @@ public sealed class VendorService : IVendorService
 			Description = request.Description
 		};
 
+		//TODO: подумать о том как привести это в порядок.
 		_logger.LogInformation("Saving vendor to repository. Name: {VendorName}", vendor.Name);
 
 		await _repository.CreateAsync(vendor, cancellationToken);
 
-		_logger.LogInformation("Vendor {VendorName} successfully created with ID {VendorId}", vendor.Name, vendor.Id);
+		_logger.LogInformation("Vendor {VendorName} successfully created", vendor.Name);
 
 		return vendor;
 	}

@@ -26,7 +26,7 @@ public partial class App : Application
 	protected override void OnStart()
 	{
 		InitializeComponent();
-
+		
 		_dbContext.Database.MigrateAsync(_cancellationTokenSource.Token).ContinueWith(t =>
 		{
 			if (t.IsCompletedSuccessfully)

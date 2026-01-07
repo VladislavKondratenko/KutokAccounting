@@ -20,15 +20,20 @@ public readonly record struct Money
 	{
 		return left.Value < right.Value;
 	}
-	
+
 	public static Money operator +(Money left, Money right)
 	{
 		return new Money(left.Value + right.Value);
 	}
-	
+
 	public static Money operator -(Money left, Money right)
 	{
 		return new Money(left.Value - right.Value);
+	}
+
+	public static implicit operator long(Money money)
+	{
+		return money.Value;
 	}
 
 	public static Money Parse(string value)
@@ -44,7 +49,7 @@ public readonly record struct Money
 			if (span[i] == '.')
 			{
 				formattedSpan[i] = ',';
-				
+
 				continue;
 			}
 

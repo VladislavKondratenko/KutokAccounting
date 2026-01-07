@@ -35,8 +35,13 @@ public partial class NavMenu : ComponentBase
 		_stores = stores.Items.ToList();
 	}
 
-	private string GetHrefToStore(int id)
+	private string GetHrefToStoreAccounting(int id)
 	{
 		return $"/StoreAccounting/{id}";
+	}
+
+	private string GetHrefToStoreInvoices(int id)
+	{
+		return $"/invoices/{id}";
 	}
 }

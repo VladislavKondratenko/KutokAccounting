@@ -1,4 +1,4 @@
-﻿using KutokAccounting.Components.Pages.TransactionTypes.Models;
+using KutokAccounting.Components.Pages.TransactionTypes.Models;
 using KutokAccounting.DataProvider.Models;
 using KutokAccounting.Services.TransactionTypes.Models;
 using MudBlazor;
@@ -24,7 +24,7 @@ public partial class TransactionTypesPage
 
 		if (filterDefinitions is not null)
 		{
-			foreach (var filter in filterDefinitions)
+			foreach (IFilterDefinition<TransactionTypeView> filter in filterDefinitions)
 			{
 				if (filter.Title == TransactionTypeFiltersConstants.Name)
 				{
@@ -54,11 +54,7 @@ public partial class TransactionTypesPage
 		}
 		catch (Exception)
 		{
-			return new GridData<TransactionTypeView>
-			{
-				Items = new List<TransactionTypeView>(),
-				TotalItems = 0
-			};
+			return new GridData<TransactionTypeView>();
 		}
 		finally
 		{
@@ -75,7 +71,7 @@ public partial class TransactionTypesPage
 		PagedResult<TransactionType> pagedResult =
 			await TransactionTypeService.GetAsync(transactionTypeQueryParameters, cancellationToken);
 
-		List<TransactionTypeView> view = pagedResult.Items.Select(tp => new TransactionTypeView
+		List<TransactionTypeView> result = pagedResult.Items.Select(tp => new TransactionTypeView
 		{
 			Id = tp.Id,
 			Name = tp.Name,
@@ -84,7 +80,7 @@ public partial class TransactionTypesPage
 
 		return new GridData<TransactionTypeView>
 		{
-			Items = view ?? new List<TransactionTypeView>(),
+			Items = result,
 			TotalItems = pagedResult.Count
 		};
 	}
@@ -93,7 +89,21 @@ public partial class TransactionTypesPage
 	{
 		using CancellationTokenSource tokenSource = new(TimeSpan.FromSeconds(30));
 
-		await TransactionTypeService.DeleteAsync(transactionType.Id, tokenSource.Token);
+		int rowsDeleted = await TransactionTypeService.DeleteAsync(transactionType.Id, tokenSource.Token);
+
+		if (rowsDeleted == 0)
+		{
+			DialogOptions options = new()
+			{
+				FullWidth = true,
+				MaxWidth = MaxWidth.Medium,
+				CloseOnEscapeKey = true
+			};
+
+			bool? result = await DialogService.ShowMessageBox("⚠️Увага",
+				"Неможливо видалити тип транзакції, оскільки існують пов'язані з ним транзакції!", "Ок",
+				options: options);
+		}
 
 		await _dataGrid.ReloadServerData();
 	}

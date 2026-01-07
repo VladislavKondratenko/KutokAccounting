@@ -21,6 +21,20 @@ internal class LogFileWriter : IDisposable, IAsyncDisposable
 		_streamWriter = new StreamWriter(_fileStream, leaveOpen: true);
 	}
 
+	public async ValueTask DisposeAsync()
+	{
+		await _fileStream.DisposeAsync();
+		await _streamWriter.DisposeAsync();
+		_semaphoreSlim.Dispose();
+	}
+
+	public void Dispose()
+	{
+		_fileStream.Dispose();
+		_streamWriter.Dispose();
+		_semaphoreSlim.Dispose();
+	}
+
 	public async ValueTask WriteAsync(string log, CancellationToken cancellationToken)
 	{
 		await _semaphoreSlim.WaitAsync(cancellationToken);
@@ -34,19 +48,5 @@ internal class LogFileWriter : IDisposable, IAsyncDisposable
 		{
 			_semaphoreSlim.Release();
 		}
-	}
-	
-	public async ValueTask DisposeAsync()
-	{
-		await _fileStream.DisposeAsync();
-		await _streamWriter.DisposeAsync();
-		_semaphoreSlim.Dispose();
-	}
-
-	public void Dispose()
-	{
-		_fileStream.Dispose();
-		_streamWriter.Dispose();
-		_semaphoreSlim.Dispose();
 	}
 }

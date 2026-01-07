@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using KutokAccounting.Components.Pages.Transactions.Models;
 using KutokAccounting.DataProvider.Models;
 using Microsoft.AspNetCore.Components;
@@ -36,7 +35,9 @@ public partial class FilterWindow
 			{
 				_operator = existingFilter.Operator ?? "=";
 				_rawValue = new Money(result).ToString("0.00");
-			};
+			}
+
+			;
 		}
 
 		_filterOpen = true;
@@ -86,6 +87,6 @@ public partial class FilterWindow
 	{
 		return MoneyFormatRegex.MoneyValueRegex().IsMatch(value)
 			? string.Empty
-			: "Число має бути у форматі 123.45 або 123,45";
+			: "Значення повинно бути додатним числом з двома знаками після точки (наприклад, 123.45 або 123,45).";
 	}
 }

@@ -11,6 +11,7 @@ public class KutokDbContext : DbContext
 	public DbSet<Transaction> Transactions { get; set; }
 	public DbSet<TransactionType> TransactionTypes { get; set; }
 	public DbSet<Invoice> Invoices { get; set; }
+	public DbSet<InvoiceStatus> InvoiceStatuses { get; set; }
 
 	public KutokDbContext(DbContextOptions<KutokDbContext> options) : base(options)
 	{
@@ -23,5 +24,6 @@ public class KutokDbContext : DbContext
 		modelBuilder.ApplyConfiguration(new TransactionConfiguration());
 		modelBuilder.ApplyConfiguration(new TransactionTypeConfiguration());
 		modelBuilder.ApplyConfiguration(new InvoiceConfiguration());
+		modelBuilder.ApplyConfiguration(new InvoiceStatusConfiguration());
 	}
 }

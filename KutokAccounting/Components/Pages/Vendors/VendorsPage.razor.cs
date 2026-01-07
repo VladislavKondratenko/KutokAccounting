@@ -12,7 +12,7 @@ public partial class VendorsPage
 	};
 
 	private MudDataGrid<Vendor> _dataGrid = new();
-	
+
 	private string? _searchString;
 
 	private async Task<GridData<Vendor>> GetVendorsAsync(GridState<Vendor> state)
@@ -33,17 +33,13 @@ public partial class VendorsPage
 
 			return new GridData<Vendor>
 			{
-				Items = pagedResult.Items ?? new List<Vendor>(),
+				Items = pagedResult.Items,
 				TotalItems = pagedResult.Count
 			};
 		}
 		catch (Exception)
 		{
-			return new GridData<Vendor>
-			{
-				Items = new List<Vendor>(),
-				TotalItems = 0
-			};
+			return new GridData<Vendor>();
 		}
 		finally
 		{

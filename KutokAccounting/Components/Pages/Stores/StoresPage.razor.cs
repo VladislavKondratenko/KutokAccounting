@@ -150,7 +150,7 @@ partial class StoresPage
 				d => d.StoreQueryParameters, _queryStoreParameters
 			}
 		};
-		
+
 		IDialogReference dialog =
 			await DialogService.ShowAsync<SearchStoreDialog>("Пошук", dialogParameters, _dialogOptions);
 

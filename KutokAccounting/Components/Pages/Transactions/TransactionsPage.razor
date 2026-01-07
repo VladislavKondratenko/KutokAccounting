@@ -34,7 +34,7 @@
                 <MudStack Style="width: 100%;">
                     <MudText Typo="Typo.h6" Style="margin-top:20px;">Транзакції</MudText>
                     <MudStack Row="true" Justify="Justify.SpaceBetween" Style="width:100%;">
-                        <MudTextField 
+                        <MudTextField
                             T="string"
                             @bind-Value="_searchString"
                             @bind-Value:after="() => _dataGrid.ReloadServerData()"
@@ -91,9 +91,12 @@
                 <TemplateColumn>
                     <CellTemplate>
                         <MudStack Row Justify="Justify.FlexEnd" Spacing="2">
-                            <MudButton Size="Size.Medium" Variant="Variant.Filled" Color="Color.Primary"
-                                       OnClick="() => OnEditButtonClick(context.Item)">Редагувати
-                            </MudButton>
+                            @if (context.Item?.TransactionType.Name != "Службовий тип транзакції")
+                            {
+                                <MudButton Size="Size.Medium" Variant="Variant.Filled" Color="Color.Primary"
+                                           OnClick="() => OnEditButtonClick(context.Item)">Редагувати
+                                </MudButton>
+                            }
                             <MudButton Size="Size.Medium" Variant="Variant.Filled" Color="Color.Secondary"
                                        OnClick="() => OnDeleteButtonClick(context.Item)">Видалити
                             </MudButton>

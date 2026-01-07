@@ -1,16 +1,11 @@
 @using KutokAccounting.Components.Pages.TransactionTypes.Models
-@using KutokAccounting.Services.Transactions.Interfaces
-@using KutokAccounting.Services.TransactionTypes.Interfaces
-@inject ITransactionService TransactionService
-@inject ITransactionTypeService TransactionTypeService
-
 <MudDialog>
     <TitleContent>
         Редагувати транзакцію
     </TitleContent>
     <DialogContent>
         <MudForm @bind-IsValid="_isSuccess">
-            <MudTextField @bind-Value="TransactionView.Name"
+            <MudTextField @bind-Value="Transaction.Name"
                           Placeholder="Введіть назву транзакції"
                           Label="Назва"
                           Variant="Variant.Outlined"
@@ -21,7 +16,7 @@
                           Required="true"
                           RequiredError="Це поле обов'язкове"
                           Margin="Margin.Normal"/>
-            <MudTextField @bind-Value="TransactionView.Description"
+            <MudTextField @bind-Value="Transaction.Description"
                           Placeholder="Опис"
                           Label="Опис"
                           Variant="Variant.Outlined"
@@ -31,8 +26,8 @@
                           Immediate="true"
                           Required="false"
                           Margin="Margin.Normal"/>
-            <MudTextField T = "string"
-                          Value="@TransactionView.Money.ToString("0.00")"
+            <MudTextField T="string"
+                          Value="@Transaction.Money.ToString("0.00")"
                           ValueChanged="OnMoneyChanged"
                           Placeholder="Сума транзакції"
                           Label="Сума"
@@ -40,15 +35,16 @@
                           Variant="Variant.Outlined"
                           Immediate="true"
                           Required="true"
-                          RequiredError="Це поле обов'язкове"
-            />
+                          RequiredError="Це поле обов'язкове"/>
             <MudAutocomplete T="TransactionTypeView"
                              AdornmentIcon="@Icons.Material.Filled.Search"
                              Variant="Variant.Outlined"
-                             @bind-Value="TransactionView.TransactionType"
+                             @bind-Value="Transaction.TransactionType"
                              SearchFunc="SearchAsync"
                              Immediate="true"
                              Clearable="true"
+                             Required="true"
+                             RequiredError="Це поле обов'язкове"
                              Dense="true"
                              Placeholder="Введіть тип транзакції"
                              Label="Тип транзакції"/>
@@ -56,6 +52,6 @@
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="@Cancel">Назад</MudButton>
-        <MudButton OnClick="@UpdateAsync" Disabled="!_isSuccess" Color="Color.Primary">Підтвердити</MudButton>
+        <MudButton OnClick="@EditAsync" Disabled="!_isSuccess" Color="Color.Primary">Підтвердити</MudButton>
     </DialogActions>
 </MudDialog>

@@ -5,5 +5,4 @@ namespace KutokAccounting.Services.Transactions.Validators;
 
 public class TransactionQueryParametersValidator : AbstractValidator<TransactionQueryParameters>
 {
-	
 }

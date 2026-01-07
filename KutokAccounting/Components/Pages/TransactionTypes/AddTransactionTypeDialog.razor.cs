@@ -6,8 +6,6 @@ namespace KutokAccounting.Components.Pages.TransactionTypes;
 
 public partial class AddTransactionTypeDialog
 {
-	private string[] _errors;
-
 	private string? _name;
 
 	private bool _isIncome;

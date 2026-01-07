@@ -1,4 +1,3 @@
-using System.Text.RegularExpressions;
 using KutokAccounting.Components.Pages.TransactionTypes.Models;
 using KutokAccounting.DataProvider.Models;
 using KutokAccounting.Services.Transactions.Models;
@@ -10,8 +9,6 @@ namespace KutokAccounting.Components.Pages.Transactions;
 
 public partial class AddTransactionDialog : ComponentBase
 {
-	private string[] _errors;
-
 	private string? _name;
 
 	private string? _description;
@@ -23,15 +20,18 @@ public partial class AddTransactionDialog : ComponentBase
 	private bool _isSuccess;
 
 	[Parameter]
+	public int? InvoiceId { get; set; }
+
+	[Parameter]
 	public int StoreId { get; set; }
-	
+
 	[CascadingParameter]
 	public IMudDialogInstance MudDialog { get; set; }
 
 	private async Task AddAsync()
 	{
 		using CancellationTokenSource tokenSource = new(TimeSpan.FromSeconds(30));
-		
+
 		TransactionDto transaction = new()
 		{
 			Name = _name,
@@ -39,7 +39,7 @@ public partial class AddTransactionDialog : ComponentBase
 			Value = Money.Parse(_value).Value,
 			TransactionTypeId = _transactionType.Id,
 			StoreId = StoreId,
-			InvoiceId = 1 // Заглушка
+			InvoiceId = InvoiceId
 		};
 
 		await TransactionService.CreateAsync(transaction, tokenSource.Token);
@@ -73,8 +73,8 @@ public partial class AddTransactionDialog : ComponentBase
 	private string ValidateValue(string value)
 	{
 		return MoneyFormatRegex.MoneyValueRegex().IsMatch(value)
-			? "Значення повинно бути додатним числом з двома знаками після точки (наприклад, 123.45 або 123,45)."
-			: string.Empty;
+			? string.Empty
+			: "Значення повинно бути додатним числом з двома знаками після точки (наприклад, 123.45 або 123,45).";
 	}
 
 	private void Cancel()

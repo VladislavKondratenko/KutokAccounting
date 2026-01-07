@@ -56,8 +56,8 @@ public sealed class TransactionTypeService : ITransactionTypeService
 		await _repository.CreateAsync(transactionType, cancellationToken);
 
 		_logger.LogInformation(
-			"Transaction type {TransactionTypeName} successfully created with ID {TransactionTypeId}",
-			transactionType.Name, transactionType.Id);
+			"Transaction type {TransactionTypeName} successfully created",
+			transactionType.Name);
 
 		return transactionType;
 	}
@@ -96,7 +96,8 @@ public sealed class TransactionTypeService : ITransactionTypeService
 
 		if (validationResult.IsValid is false)
 		{
-			_logger.LogWarning("Query parameters for transaction type validation failed. Errors: {Errors}", validationResult.Errors);
+			_logger.LogWarning("Query parameters for transaction type validation failed. Errors: {Errors}",
+				validationResult.Errors);
 
 			throw new ArgumentException(validationResult.ToString());
 		}
@@ -148,12 +149,37 @@ public sealed class TransactionTypeService : ITransactionTypeService
 		_logger.LogInformation("Transaction type {TransactionTypeName} updated successfully", transactionType.Name);
 	}
 
-	public async ValueTask DeleteAsync(int id, CancellationToken cancellationToken)
+	public async ValueTask<int> DeleteAsync(int id, CancellationToken cancellationToken)
 	{
 		cancellationToken.ThrowIfCancellationRequested();
 
-		await _repository.DeleteAsync(id, cancellationToken);
+		int rowsDeleted = await _repository.DeleteAsync(id, cancellationToken);
 
 		_logger.LogInformation("Transaction type with ID {TransactionTypeId} deleted successfully", id);
+
+		return rowsDeleted;
+	}
+
+	public async ValueTask<TransactionType> GetByCodeAsync(string code, CancellationToken cancellationToken)
+	{
+		cancellationToken.ThrowIfCancellationRequested();
+
+		_logger.LogInformation("Fetching transaction type by Code: {TransactionTypeCode}", code);
+
+		TransactionType? transactionType = await _repository.GetByCodeAsync(code, cancellationToken);
+
+		if (transactionType is null)
+		{
+			_logger.LogWarning("Transaction type with Code {TransactionTypeCode} not found", code);
+
+			throw new NotFoundException("Transaction type not found");
+		}
+
+		_logger.LogInformation(
+			"Transaction type with Code {TransactionTypeCode} retrieved successfully. Name: {TransactionTypeName}",
+			transactionType.Id,
+			transactionType.Name);
+
+		return transactionType;
 	}
 }

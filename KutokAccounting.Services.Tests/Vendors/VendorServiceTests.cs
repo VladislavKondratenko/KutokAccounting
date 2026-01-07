@@ -1,3 +1,4 @@
+using KutokAccounting.DataProvider.Models;
 using KutokAccounting.Services.Vendors;
 using KutokAccounting.Services.Vendors.Models;
 using NSubstitute;
@@ -10,16 +11,16 @@ public class VendorServiceTests
 	public async Task CreateVendor()
 	{
 		//Arrange
-		var vendorService = Substitute.For<IVendorService>();
+		IVendorService? vendorService = Substitute.For<IVendorService>();
 
-		VendorDto vendorDto = new VendorDto()
+		VendorDto vendorDto = new()
 		{
 			Description = null,
 			Name = new string('a', 1000)
 		};
-		
+
 		//Act
-		var result = await vendorService.CreateAsync(vendorDto, default);
+		Vendor? result = await vendorService.CreateAsync(vendorDto, default);
 
 		//Assert
 		Assert.Null(result);

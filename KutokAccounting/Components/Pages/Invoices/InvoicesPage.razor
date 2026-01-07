@@ -1,0 +1,120 @@
+@page "/invoices/{storeId:int}"
+@using KutokAccounting.Components.Pages.Invoices.Models
+@using KutokAccounting.DataProvider.Models
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudGrid Justify="Justify.FlexStart" Class="mb-6">
+        <MudItem>
+            <MudDateRangePicker @ref="_picker"
+                                PickerVariant="PickerVariant.Dialog"
+                                @bind-DateRange="@_dateRange"
+                                @bind-DateRange:after="OnDateRangeChanged"
+                                Margin="Margin.Dense">
+            </MudDateRangePicker>
+
+            <PickerActions>
+                <MudButton Class="mr-auto align-self-start" OnClick="() => _picker.ClearAsync()">Очистити</MudButton>
+            </PickerActions>
+        </MudItem>
+    </MudGrid>
+    <MudPaper Outlined="true">
+        <MudDataGrid
+            @ref="_dataGrid"
+            T="InvoiceView"
+            ServerData="GetInvoicesAsync"
+            Filterable="true"
+            FilterMode="DataGridFilterMode.ColumnFilterRow">
+            <ToolBarContent>
+                <MudStack Style="width: 100%;">
+                    <MudText Typo="Typo.h6" Style="margin-top:20px;">Накладні</MudText>
+                    <MudStack Row="true" Justify="Justify.SpaceBetween" Style="width:100%;">
+                        <MudTextField
+                            T="string"
+                            @bind-Value="_searchString"
+                            @bind-Value:after="() => _dataGrid.ReloadServerData()"
+                            Placeholder="Пошук"
+                            Immediate="true"
+                            DebounceInterval="300"
+                            Adornment="Adornment.End"
+                            AdornmentIcon="@Icons.Material.Filled.Search"
+                            IconSize="Size.Medium"
+                            Style="width:450px;">
+                        </MudTextField>
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="OnAddButtonClick">
+                            Додати нову накладну
+                        </MudButton>
+                    </MudStack>
+                </MudStack>
+            </ToolBarContent>
+            <Columns>
+                <PropertyColumn
+                    Property="iv => iv.Number"
+                    Title="Номер"
+                    Sortable="false"
+                    Filterable="true"
+                    FilterOperators="_stringFilterOperators"></PropertyColumn>
+                <PropertyColumn
+                    Property="iv => iv.Status.CreatedAt"
+                    Title="Час створення"
+                    Sortable="true"
+                    Filterable="false"></PropertyColumn>
+                <PropertyColumn
+                    Property="iv => iv.Status.State"
+                    Title="Статус"
+                    Sortable="true"
+                    Filterable="true"></PropertyColumn>
+                <PropertyColumn
+                    Property="iv => iv.VendorName"
+                    Title="Постачальник"
+                    Sortable="true"
+                    Filterable="true"
+                    FilterOperators="_stringFilterOperators">
+                    <FilterTemplate>
+                        <MudIconButton OnClick="() => _filterOpen = true" Icon="@_icon" Size="@Size.Small"/>
+                        <MudOverlay Visible="@_filterOpen" OnClick="() => _filterOpen = false"/>
+                        <MudPopover Open="@_filterOpen" AnchorOrigin="Origin.BottomCenter"
+                                    TransformOrigin="Origin.TopCenter" Style="width:150px">
+                            <MudStack Spacing="0">
+                                <MudCheckBox T="bool" Label="Select All" Size="@Size.Small" Value="@_selectAll"
+                                             ValueChanged="@SelectAll"/>
+                                <MudStack Spacing="0" Style="overflow-y:auto;max-height:250px">
+                                    @foreach (InvoiceView? item in context.Items)
+                                    {
+                                        <MudCheckBox T="bool" Label="@($"{item.Vendor.Name}")" Size="@Size.Small"
+                                                     Value="@(_selectedVendors.Contains(item.Vendor))"
+                                                     ValueChanged="@(value => SelectedChanged(value, item.Vendor))"/>
+                                    }
+                                </MudStack>
+                            </MudStack>
+                        </MudPopover>
+                    </FilterTemplate>
+                </PropertyColumn>
+                <TemplateColumn>
+                    <CellTemplate>
+                        <MudStack Row Justify="Justify.FlexEnd">
+                            <MudFab Size="Size.Small" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Edit"
+                                    OnClick="() => OnEditButtonClick(context.Item)"/>
+                            <MudFab Size="Size.Small" Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Delete"
+                                    OnClick="() => OnDeleteButtonClick(context.Item)"/>
+                            @if (context.Item.Status.State is not State.Closed)
+                            {
+                                <MudFab Size="Size.Small"
+                                        Color="Color.Secondary"
+                                        StartIcon="@Icons.Material.Filled.Close"
+                                        OnClick="() => OnCloseButtonClick(context.Item)"/>
+
+                                <MudFab Size="Size.Small"
+                                        Color="Color.Info"
+                                        StartIcon="@Icons.Material.Filled.Add"
+                                        OnClick="() => OnAddTransactionClick(context.Item)"></MudFab>
+                            }
+                        </MudStack>
+                    </CellTemplate>
+                </TemplateColumn>
+            </Columns>
+            <PagerContent>
+                <MudDataGridPager T="InvoiceView"></MudDataGridPager>
+            </PagerContent>
+        </MudDataGrid>
+    </MudPaper>
+</MudContainer>

@@ -1,5 +1,6 @@
 using KutokAccounting.DataProvider;
 using KutokAccounting.DataProvider.Models;
+using KutokAccounting.Services.TransactionTypes.Exceptions;
 using KutokAccounting.Services.TransactionTypes.Interfaces;
 using KutokAccounting.Services.TransactionTypes.Models;
 using Microsoft.EntityFrameworkCore;
@@ -46,24 +47,24 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 	}
 
 	public async ValueTask<PagedResult<TransactionType>> GetAsync(
-		TransactionTypeQueryParameters transactionTypeQueryParameters,
+		TransactionTypeQueryParameters parameters,
 		CancellationToken cancellationToken)
 	{
 		IQueryable<TransactionType> query = _dbContext.TransactionTypes.AsNoTracking();
 
-		if (string.IsNullOrWhiteSpace(transactionTypeQueryParameters?.Filters?.Name) is false)
+		if (string.IsNullOrWhiteSpace(parameters?.Filters?.Name) is false)
 		{
-			query = query.Where(tp => tp.Name == transactionTypeQueryParameters.Filters.Name);
+			query = query.Where(tp => tp.Name == parameters.Filters.Name);
 		}
 
-		if (transactionTypeQueryParameters?.Filters?.IsIncome is not null)
+		if (parameters?.Filters?.IsIncome is not null)
 		{
-			query = query.Where(tp => tp.IsIncome == transactionTypeQueryParameters.Filters.IsIncome);
+			query = query.Where(tp => tp.IsIncome == parameters.Filters.IsIncome);
 		}
 
-		if (string.IsNullOrWhiteSpace(transactionTypeQueryParameters?.SearchString) is false)
+		if (string.IsNullOrWhiteSpace(parameters?.SearchString) is false)
 		{
-			query = query.Where(tp => EF.Functions.Like(tp.Name, $"%{transactionTypeQueryParameters.SearchString}%"));
+			query = query.Where(tp => EF.Functions.Like(tp.Name, $"%{parameters.SearchString}%"));
 		}
 
 		try
@@ -71,8 +72,9 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 			Task<int> countTask = query.CountAsync(cancellationToken);
 
 			List<TransactionType> transactionTypes = await query
-				.Skip(transactionTypeQueryParameters.Pagination.Skip)
-				.Take(transactionTypeQueryParameters.Pagination.PageSize)
+				.Skip(parameters.Pagination.Skip)
+				.Take(parameters.Pagination.PageSize)
+				.Where(tp => tp.Code == KutokConfigurations.CustomTransactionTypeCode) //Переробити + додати константу
 				.Select(tp => new TransactionType
 				{
 					Id = tp.Id,
@@ -91,13 +93,13 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 		catch (Exception e)
 		{
 			_logger.LogWarning(e, "Failed to retrieve transaction types with QueryParameters: {QueryParameters}",
-				transactionTypeQueryParameters);
+				parameters);
 
 			throw;
 		}
 	}
 
-	public async ValueTask<TransactionType?> GetByIdAsync(int id, CancellationToken cancellationToken)
+	public async ValueTask<TransactionType> GetByIdAsync(int id, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -105,7 +107,7 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 				.AsNoTracking()
 				.FirstOrDefaultAsync(tp => tp.Id == id, cancellationToken);
 
-			return transactionType;
+			return transactionType ?? throw new NotFoundException("Transaction type not found.");
 		}
 		catch (Exception e)
 		{
@@ -115,13 +117,15 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 		}
 	}
 
-	public async ValueTask DeleteAsync(int id, CancellationToken cancellationToken)
+	public async ValueTask<int> DeleteAsync(int id, CancellationToken cancellationToken)
 	{
+		int rowsDeleted = 0;
+
 		await _semaphoreSlim.WaitAsync(cancellationToken);
 
 		try
 		{
-			await _dbContext.TransactionTypes
+			rowsDeleted = await _dbContext.TransactionTypes
 				.Where(transactionType => transactionType.Id == id)
 				.ExecuteDeleteAsync(cancellationToken);
 		}
@@ -133,6 +137,8 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 		{
 			_semaphoreSlim.Release();
 		}
+
+		return rowsDeleted;
 	}
 
 	public async ValueTask UpdateAsync(TransactionType transactionType, CancellationToken cancellationToken)
@@ -157,5 +163,12 @@ public sealed class TransactionTypeRepository : ITransactionTypeRepository
 		{
 			_semaphoreSlim.Release();
 		}
+	}
+
+	public async ValueTask<TransactionType?> GetByCodeAsync(string code, CancellationToken cancellationToken)
+	{
+		return await _dbContext.TransactionTypes
+			.AsNoTracking()
+			.FirstOrDefaultAsync(tp => tp.Code == code, cancellationToken);
 	}
 }

@@ -9,8 +9,7 @@
         Додати нову транзакцію
     </TitleContent>
     <DialogContent>
-        <MudForm @bind-IsValid="_isSuccess"
-                 @bind-Errors="_errors">
+        <MudForm @bind-IsValid="_isSuccess">
             <MudTextField @bind-Value="_name"
                           Placeholder="Назва транзакції"
                           Label="Назва"
@@ -24,7 +23,7 @@
                           Margin="Margin.Normal"/>
             <MudTextField @bind-Value="_description"
                           Placeholder="Опис транзакції"
-                          Label="Назва"
+                          Label="Опис"
                           Variant="Variant.Outlined"
                           Counter="1024"
                           MaxLength="1024"

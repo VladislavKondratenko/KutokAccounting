@@ -1,5 +1,6 @@
 using KutokAccounting.DataProvider;
 using KutokAccounting.DataProvider.Models;
+using KutokAccounting.Services.TransactionTypes.Exceptions;
 using KutokAccounting.Services.Vendors.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -101,7 +102,7 @@ public sealed class VendorRepository : IVendorRepository
 				.AsNoTracking()
 				.FirstOrDefaultAsync(v => v.Id == id, cancellationToken);
 
-			return vendor ?? throw new Exception("Vendor not found");
+			return vendor ?? throw new NotFoundException("Vendor not found");
 		}
 		catch (Exception e)
 		{

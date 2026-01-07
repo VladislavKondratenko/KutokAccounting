@@ -64,6 +64,7 @@ public class TransactionConfiguration : IEntityTypeConfiguration<Transaction>
 			.HasOne(t => t.Invoice)
 			.WithMany(i => i.Transactions)
 			.HasForeignKey(t => t.InvoiceId)
+			.OnDelete(DeleteBehavior.Restrict)
 			.IsRequired(false);
 	}
 }

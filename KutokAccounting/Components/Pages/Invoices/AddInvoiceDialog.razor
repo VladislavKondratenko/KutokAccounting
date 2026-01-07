@@ -1,0 +1,37 @@
+@using KutokAccounting.DataProvider.Models
+<MudDialog>
+    <TitleContent>
+        Відкрити нову накладну
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="_isSuccess">
+            <MudTextField @bind-Value="_number"
+                          Placeholder="Номер накладної"
+                          Label="Номер"
+                          Variant="Variant.Outlined"
+                          Counter="100"
+                          MaxLength="100"
+                          Lines="1"
+                          Immediate="true"
+                          Required="true"
+                          RequiredError="Це поле обов'язкове"
+                          Margin="Margin.Normal"/>
+            <MudAutocomplete T="Vendor"
+                             AdornmentIcon="@Icons.Material.Filled.Search"
+                             Variant="Variant.Outlined"
+                             @bind-Value="_vendor"
+                             SearchFunc="SearchAsync"
+                             Immediate="true"
+                             Clearable="true"
+                             Dense="true"
+                             Placeholder="Введіть постачальника"
+                             Label="Постачальник"
+                             Required="true"
+                             RequiredError="Це поле обов'язкове"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Назад</MudButton>
+        <MudButton OnClick="OpenAsync" Disabled="!_isSuccess" Color="Color.Primary">Додати</MudButton>
+    </DialogActions>
+</MudDialog>

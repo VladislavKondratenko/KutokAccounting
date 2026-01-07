@@ -31,6 +31,12 @@ public class InvoiceConfiguration : IEntityTypeConfiguration<Invoice>
 			.IsRequired();
 
 		builder
+			.HasMany(i => i.StatusHistory)
+			.WithOne(s => s.Invoice)
+			.HasForeignKey(s => s.InvoiceId)
+			.IsRequired();
+
+		builder
 			.HasOne(i => i.Store)
 			.WithMany(s => s.Invoices)
 			.HasForeignKey(i => i.StoreId)

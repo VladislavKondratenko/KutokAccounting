@@ -1,0 +1,21 @@
+﻿<MudDialog>
+    <TitleContent>
+        Закрити накладну
+    </TitleContent>
+    <DialogContent>
+        <MudForm @bind-IsValid="_isSuccess">
+            <MudTextField @bind-Value="_value"
+                          Placeholder="Сума"
+                          Label="Сума"
+                          Validation="ValidateValue"
+                          Variant="Variant.Outlined"
+                          Immediate="true"
+                          Required="true"
+                          RequiredError="Це поле обов'язкове"/>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Назад</MudButton>
+        <MudButton OnClick="CloseAsync" Disabled="!_isSuccess" Color="Color.Primary">Підтвердити</MudButton>
+    </DialogActions>
+</MudDialog>

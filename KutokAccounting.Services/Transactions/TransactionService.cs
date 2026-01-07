@@ -1,7 +1,6 @@
 using FluentValidation;
 using FluentValidation.Results;
 using KutokAccounting.DataProvider.Models;
-using KutokAccounting.Services.Stores.Models;
 using KutokAccounting.Services.Transactions.Interfaces;
 using KutokAccounting.Services.Transactions.Models;
 using KutokAccounting.Services.TransactionTypes.Exceptions;
@@ -52,7 +51,7 @@ public sealed class TransactionService : ITransactionService
 			CreatedAt = DateTime.Now,
 			StoreId = request.StoreId,
 			TransactionTypeId = request.TransactionTypeId,
-			InvoiceId = 1
+			InvoiceId = request.InvoiceId
 		};
 
 		_logger.LogInformation("Saving transaction to repository. Name: {TransactionName}",
@@ -61,8 +60,8 @@ public sealed class TransactionService : ITransactionService
 		await _repository.CreateAsync(transaction, cancellationToken);
 
 		_logger.LogInformation(
-			"Transaction  {TransactionName} successfully created with ID {TransactionId}",
-			transaction.Name, transaction.Id);
+			"Transaction  {TransactionName} successfully created",
+			transaction.Name);
 
 		return transaction;
 	}
@@ -113,8 +112,19 @@ public sealed class TransactionService : ITransactionService
 		IAsyncEnumerable<TransactionCalculationView> transactions =
 			_repository.EnumerateTransactionsAsync(parameters, cancellationToken);
 
+		int counter = 0;
+
 		await foreach (TransactionCalculationView transactionView in transactions)
 		{
+			await Task.Yield();
+
+			Interlocked.Increment(ref counter);
+
+			if (counter % 5 == 0)
+			{
+				await Task.Delay(1, cancellationToken);
+			}
+
 			if (transactionView.Sign)
 			{
 				result.Income += transactionView.Money;

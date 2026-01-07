@@ -37,6 +37,8 @@ public class QueryMapper
 			StoreId = _storeId
 		};
 
+		Sorting sorting = MapSorting(state.SortDefinitions.FirstOrDefault());
+
 		IFilterDefinition<TransactionView>? filterDefinition = state.FilterDefinitions.FirstOrDefault();
 
 		string? key = filterDefinition?.Title;
@@ -45,7 +47,7 @@ public class QueryMapper
 		{
 			strategy.Apply(filters, filterDefinition);
 		}
-		
+
 		MapDateRange(filters, _dateRange);
 
 		return new TransactionQueryParameters
@@ -57,7 +59,7 @@ public class QueryMapper
 				PageSize = state.PageSize
 			},
 			SearchString = _searchString,
-			Sorting = MapSorting(state.SortDefinitions.FirstOrDefault())
+			Sorting = sorting
 		};
 	}
 
@@ -82,6 +84,6 @@ public class QueryMapper
 			sorting.Descending = sortDefinition.Descending;
 		}
 
-		return sorting;	
+		return sorting;
 	}
 }

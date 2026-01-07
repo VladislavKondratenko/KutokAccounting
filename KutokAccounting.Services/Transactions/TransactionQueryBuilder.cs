@@ -93,7 +93,7 @@ public class TransactionQueryBuilder
 				_query = _query.Where(t => t.CreatedAt >= filters.Range.Value.StartOfRange &&
 					t.CreatedAt <= filters.Range.Value.EndOfRange);
 			}
-			
+
 			_query = _query.Where(t => t.StoreId == filters.StoreId);
 		}
 
